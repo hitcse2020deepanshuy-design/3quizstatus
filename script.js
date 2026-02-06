@@ -1,4 +1,4 @@
-const CUTOFF = 35;
+const CUTOFF = 42;
 
 const SECTIONAL_CUTOFF = {
   vocab: 15,
@@ -7,77 +7,142 @@ const SECTIONAL_CUTOFF = {
 };
 
 const USERS = {
-  "12345601": { name:"Deepanshu Yadav", password:"123456701", dob:"01-01-2000", total: 49.5, vocab: 16, ca: 17, desc: 16.5 },
-  "8504002": { name:"Nikita Soni", password:"85040002", dob:"25-11-2004", total: 52.5, vocab: 20, ca: 20, desc: 12.5 },
-  "8756203": { name:"Jyoti Yadav", password:"87562003", dob:"10-08-2002", total: 49.0, vocab: 20, ca: 15, desc: 14 },
-  "6001104": { name:"Priyanka Dev", password:"60011004", dob:"29-11-1999", total: 49.0, vocab: 20, ca: 15, desc: 14 },
-  "6205705": { name:"Priyanka Verma", password:"62057005", dob:"25-12-2003", total: 53.0, vocab: 20, ca: 14, desc: 19 },
-  "8303906": { name:"Adweta Sen", password:"83039006", dob:"27-07-2003", total: 49.0, vocab: 20, ca: 15, desc: 14 } ,
-  "7878107": { name:"Shivani Jha", password:"78781007", dob:"20-11-2003", total: 49.0, vocab: 20, ca: 15, desc: 14 },
-  "8534808": { name:"Shweta Yadav", password:"85348008", dob:"27-07-2003", total: 49.0, vocab: 20, ca: 15, desc: 14 }
+  "9151701": {
+    password: "91517001",
+    dob: "05-07-2000",
+    name: "Deepanshu Yadav",
+    vocab: { scored: 20, total: 20 },
+    ca: { scored: 20, total: 20 },
+    desc: { scored: null, total: 30 }
+  },
+
+  "8504002": {
+    password: "85040002",
+    dob: "25-11-2004",
+    name: "Nikita Soni",
+    vocab: { scored: 18, total: 20 },
+    ca: { scored: 11, total: 20 },
+    desc: { scored: null, total: 30 }
+  },
+
+  "8756203": {
+    password: "87562003",
+    dob: "10-08-2002",
+    name: "Jyoti Yadav",
+    vocab: { scored: 20, total: 20 },
+    ca: { scored: 18, total: 20 },
+    desc: { scored: null, total: 30 }
+  },
+
+  "6001104": {
+    password: "60011004",
+    dob: "29-11-1999",
+    name: "Priyanka Dev",
+    vocab: { scored: 20, total: 20 },
+    ca: { scored: 16, total: 20 },
+    desc: { scored: null, total: 30 }
+  },
+
+  "6205705": {
+    password: "62057005",
+    dob: "25-12-2003",
+    name: "Priyanka Verma",
+    vocab: { scored: 12, total: 20 },
+    ca: { scored: 8, total: 20 },
+    desc: { scored: null, total: 30 }
+  },
+
+  "8303906": {
+    password: "83039006",
+    dob: "27-07-2003",
+    name: "Adweta Sen",
+    vocab: { scored: null, total: 20 },
+    ca: { scored: null, total: 20 },
+    desc: { scored: null, total: 30 }
+  },
+
+  /* ✅ CORRECTED */
+  "7878107": {
+    password: "78781007",
+    dob: "02-02-2002",
+    name: "Shivani Jha",
+    vocab: { scored: 12, total: 20 },
+    ca: { scored: 10, total: 20 },
+    desc: { scored: null, total: 30 }
+  },
+
+  /* ✅ CORRECTED */
+  "8534808": {
+    password: "85348008",
+    dob: "06-06-2002",
+    name: "Shweta Yadav",
+    vocab: { scored: 16, total: 20 },
+    ca: { scored: 13, total: 20 },
+    desc: { scored: null, total: 30 }
+  }
 };
 
+// ⏰ Unlock time
+const RESULT_UNLOCK_TIME = { hour: 22, minute: 35 };
+
+function isResultUnlocked() {
+  const now = new Date();
+  const unlock = new Date();
+  unlock.setHours(RESULT_UNLOCK_TIME.hour, RESULT_UNLOCK_TIME.minute, 0, 0);
+  return now >= unlock;
+}
+
 function login() {
-  const nameInput = document.getElementById("nameInput").value.trim().toLowerCase();
-  const roll = document.getElementById("roll").value.trim();
-  const password = document.getElementById("password").value.trim();
-  const dob = document.getElementById("dob").value.trim();
   const err = document.getElementById("error");
+  const lockMsg = document.getElementById("lockMsg");
 
-  if (!nameInput || !roll || !password || !dob) {
-    err.textContent = "Please fill all fields.";
+  if (!isResultUnlocked()) {
+    lockMsg.textContent = "⏰ Results will be available after 10:35 PM.";
+    err.textContent = "";
     return;
   }
 
-  const user = USERS[roll];
-  if (!user || user.password !== password || user.dob !== dob || user.name.toLowerCase() !== nameInput) {
-    err.textContent = "Invalid details. Please check Name, Roll No, Password, or DOB.";
+  const roll = rollInput.value.trim();
+  const password = passwordInput.value.trim();
+  const dob = dobInput.value.trim();
+
+  if (!USERS[roll] || USERS[roll].password !== password || USERS[roll].dob !== dob) {
+    err.textContent = "Invalid credentials.";
     return;
   }
 
-  // Sectional cut-off check
-  const vocabClear = user.vocab >= SECTIONAL_CUTOFF.vocab;
-  const caClear = user.ca >= SECTIONAL_CUTOFF.ca;
-  const descClear = user.desc >= SECTIONAL_CUTOFF.desc;
+  const u = USERS[roll];
 
-  // Overall cut-off check
-  const overallClear = user.total >= CUTOFF;
+  const vs = u.vocab.scored ?? 0;
+  const cs = u.ca.scored ?? 0;
+  const ds = u.desc.scored ?? 0;
 
-  // Final qualification rule (IBPS style)
-  const qualified = vocabClear && caClear && descClear && overallClear;
+  const total = vs + cs + ds;
 
-  const statusText = qualified ? "PROVISIONALLY QUALIFIED" : "NOT QUALIFIED";
+  const final =
+    vs >= SECTIONAL_CUTOFF.vocab &&
+    cs >= SECTIONAL_CUTOFF.ca &&
+    ds >= SECTIONAL_CUTOFF.desc &&
+    total >= CUTOFF;
 
-  document.getElementById("nameShow").textContent = user.name;
-  document.getElementById("rollShow").textContent = roll;
+  name.textContent = u.name;
+  rollShow.textContent = roll;
+  vocab.textContent = `${vs}/${u.vocab.total}${vs >= 15 ? "" : " *"}`;
+  ca.textContent = `${cs}/${u.ca.total}${cs >= 15 ? "" : " *"}`;
+  desc.textContent = u.desc.scored === null ? "Not Attempted *" : `${ds}/30`;
+  totalEl.textContent = `${total} / 70`;
+  cutoff.textContent = CUTOFF;
 
-  const statusEl = document.getElementById("status");
-  statusEl.textContent = statusText;
-  statusEl.className = qualified ? "pass" : "fail";
+  status.textContent = final ? "Qualified" : "Not Qualified";
+  status.className = final ? "pass" : "fail";
 
-  const congrats = document.getElementById("congrats");
-  if (qualified) {
-    congrats.style.display = "block";
-    congrats.innerHTML = `
-      🎉 <strong>Congratulations!</strong><br/>
-      You have successfully cleared the overall and sectional cut-offs.
-      Please stay connected for further instructions regarding the next stage.
-    `;
-  } else {
-    congrats.style.display = "none";
-  }
-
-  document.getElementById("loginCard").style.display = "none";
-  document.getElementById("resultCard").style.display = "block";
+  loginCard.style.display = "none";
+  resultCard.style.display = "block";
 }
 
 function logout() {
-  document.getElementById("loginCard").style.display = "block";
-  document.getElementById("resultCard").style.display = "none";
-  document.getElementById("nameInput").value = "";
-  document.getElementById("roll").value = "";
-  document.getElementById("password").value = "";
-  document.getElementById("dob").value = "";
-  document.getElementById("error").textContent = "";
+  loginCard.style.display = "block";
+  resultCard.style.display = "none";
+  roll.value = password.value = dob.value = "";
+  error.textContent = "";
 }
-
