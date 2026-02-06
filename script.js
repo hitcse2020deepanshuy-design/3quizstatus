@@ -8,11 +8,13 @@ const SECTIONAL_CUTOFF = {
 
 const USERS = {
   "12345601": { name:"Deepanshu Yadav", password:"123456701", dob:"01-01-2000", total: 49.5, vocab: 16, ca: 17, desc: 16.5 },
-  "12345602": { name:"Nikita Soni", password:"123456702", dob:"02-02-2000", total: 52.5, vocab: 20, ca: 20, desc: 12.5 },
-  "12345603": { name:"Jyoti Yadav", password:"123456703", dob:"03-03-2000", total: 49.0, vocab: 20, ca: 15, desc: 14 },
-  "12345604": { name:"Priyanka Dev", password:"123456704", dob:"04-04-2000", total: 49.0, vocab: 20, ca: 15, desc: 14 },
-  "12345605": { name:"Goyal", password:"123456705", dob:"05-05-2000", total: 53.0, vocab: 20, ca: 14, desc: 19 },
-  "12345606": { name:"Adweta Sen", password:"123456706", dob:"06-06-2000", total: 49.0, vocab: 20, ca: 15, desc: 14 }
+  "8504002": { name:"Nikita Soni", password:"85040002", dob:"25-11-2004", total: 52.5, vocab: 20, ca: 20, desc: 12.5 },
+  "8756203": { name:"Jyoti Yadav", password:"87562003", dob:"10-08-2002", total: 49.0, vocab: 20, ca: 15, desc: 14 },
+  "6001104": { name:"Priyanka Dev", password:"60011004", dob:"29-11-1999", total: 49.0, vocab: 20, ca: 15, desc: 14 },
+  "6205705": { name:"Priyanka Verma", password:"62057005", dob:"25-12-2003", total: 53.0, vocab: 20, ca: 14, desc: 19 },
+  "8303906": { name:"Adweta Sen", password:"83039006", dob:"27-07-2003", total: 49.0, vocab: 20, ca: 15, desc: 14 } ,
+  "7878107": { name:"Shivani Jha", password:"78781007", dob:"20-11-2003", total: 49.0, vocab: 20, ca: 15, desc: 14 },
+  "8534808": { name:"Shweta Yadav", password:"85348008", dob:"27-07-2003", total: 49.0, vocab: 20, ca: 15, desc: 14 }
 };
 
 function login() {
@@ -78,3 +80,4 @@ function logout() {
   document.getElementById("dob").value = "";
   document.getElementById("error").textContent = "";
 }
+
