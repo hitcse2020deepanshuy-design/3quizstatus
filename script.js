@@ -1,148 +1,70 @@
-const CUTOFF = 42;
+// ===== CONFIG =====
+const TOTALS = { hindu:20, ca:20, desc:30, weeklyH:60, weeklyCA:70, overall:200 };
+const CUTOFFS = { hindu:8, ca:8, desc:12, weeklyH:24, weeklyCA:28, overall:112 };
 
-const SECTIONAL_CUTOFF = {
-  vocab: 15,
-  ca: 15,
-  desc: 12
-};
-
+// ===== USER DATA =====
 const USERS = {
-  "9151701": {
-    password: "91517001",
-    dob: "05-07-2000",
-    name: "Deepanshu Yadav",
-    vocab: { scored: 20, total: 20 },
-    ca: { scored: 20, total: 20 },
-    desc: { scored: null, total: 30 }
-  },
-
-  "8504002": {
-    password: "85040002",
-    dob: "25-11-2004",
-    name: "Nikita Soni",
-    vocab: { scored: 18, total: 20 },
-    ca: { scored: 11, total: 20 },
-    desc: { scored: null, total: 30 }
-  },
-
-  "8756203": {
-    password: "87562003",
-    dob: "10-08-2002",
-    name: "Jyoti Yadav",
-    vocab: { scored: 20, total: 20 },
-    ca: { scored: 18, total: 20 },
-    desc: { scored: null, total: 30 }
-  },
-
-  "6001104": {
-    password: "60011004",
-    dob: "29-11-1999",
-    name: "Priyanka Dev",
-    vocab: { scored: 20, total: 20 },
-    ca: { scored: 16, total: 20 },
-    desc: { scored: null, total: 30 }
-  },
-
-  "6205705": {
-    password: "62057005",
-    dob: "25-12-2003",
-    name: "Priyanka Verma",
-    vocab: { scored: 12, total: 20 },
-    ca: { scored: 8, total: 20 },
-    desc: { scored: null, total: 30 }
-  },
-
-  "8303906": {
-    password: "83039006",
-    dob: "27-07-2003",
-    name: "Adweta Sen",
-    vocab: { scored: null, total: 20 },
-    ca: { scored: null, total: 20 },
-    desc: { scored: null, total: 30 }
-  },
-
-  /* ✅ CORRECTED */
-  "7878107": {
-    password: "78781007",
-    dob: "02-02-2002",
-    name: "Shivani Jha",
-    vocab: { scored: 12, total: 20 },
-    ca: { scored: 10, total: 20 },
-    desc: { scored: null, total: 30 }
-  },
-
-  /* ✅ CORRECTED */
-  "8534808": {
-    password: "85348008",
-    dob: "06-06-2002",
-    name: "Shweta Yadav",
-    vocab: { scored: 16, total: 20 },
-    ca: { scored: 13, total: 20 },
-    desc: { scored: null, total: 30 }
-  }
+  "9151701": { password:"91517001", dob:"05-07-2000", name:"Deepanshu Yadav", hindu:20, ca:20, desc:28, weeklyH:55, weeklyCA:62 },
+  "8504002": { password:"85040002", dob:"25-11-2004", name:"Nikita Soni", hindu:18, ca:11, desc:18, weeklyH:42, weeklyCA:40 },
+  "8756203": { password:"87562003", dob:"10-08-2002", name:"Jyoti Yadav", hindu:19, ca:18, desc:25, weeklyH:48, weeklyCA:52 },
+  "6001104": { password:"60011004", dob:"29-11-1999", name:"Priyanka Dev", hindu:17, ca:16, desc:20, weeklyH:46, weeklyCA:45 },
+  "6205705": { password:"62057005", dob:"25-12-2003", name:"Priyanka Verma", hindu:6, ca:8, desc:12, weeklyH:20, weeklyCA:22 },
+  "8303906": { password:"83039006", dob:"27-07-2003", name:"Adweta Sen", hindu:0, ca:0, desc:0, weeklyH:0, weeklyCA:0 },
+  "7878107": { password:"78781007", dob:"02-02-2002", name:"Shivani Jha", hindu:6, ca:10, desc:10, weeklyH:22, weeklyCA:25 },
+  "8534808": { password:"85348008", dob:"06-06-2002", name:"Shweta Yadav", hindu:8, ca:13, desc:14, weeklyH:30, weeklyCA:35 }
 };
 
-// ⏰ Unlock time
-const RESULT_UNLOCK_TIME = { hour: 22, minute: 35 };
+document.addEventListener("DOMContentLoaded", () => {
+  submitBtn.onclick = login;
+  logoutBtn.onclick = logout;
+  downloadBtn.onclick = () => window.print();
+});
 
-function isResultUnlocked() {
-  const now = new Date();
-  const unlock = new Date();
-  unlock.setHours(RESULT_UNLOCK_TIME.hour, RESULT_UNLOCK_TIME.minute, 0, 0);
-  return now >= unlock;
-}
+// ===== LOGIN =====
+function login(){
+  const r = roll.value.trim();
+  const p = password.value.trim();
+  const d = dob.value.trim();
 
-function login() {
-  const err = document.getElementById("error");
-  const lockMsg = document.getElementById("lockMsg");
-
-  if (!isResultUnlocked()) {
-    lockMsg.textContent = "⏰ Results will be available after 10:35 PM.";
-    err.textContent = "";
+  if(!USERS[r] || USERS[r].password !== p || USERS[r].dob !== d){
+    error.textContent = "❌ Invalid credentials";
     return;
   }
 
-  const roll = rollInput.value.trim();
-  const password = passwordInput.value.trim();
-  const dob = dobInput.value.trim();
+  error.textContent = "";
+  const u = USERS[r];
 
-  if (!USERS[roll] || USERS[roll].password !== password || USERS[roll].dob !== dob) {
-    err.textContent = "Invalid credentials.";
-    return;
-  }
-
-  const u = USERS[roll];
-
-  const vs = u.vocab.scored ?? 0;
-  const cs = u.ca.scored ?? 0;
-  const ds = u.desc.scored ?? 0;
-
-  const total = vs + cs + ds;
-
-  const final =
-    vs >= SECTIONAL_CUTOFF.vocab &&
-    cs >= SECTIONAL_CUTOFF.ca &&
-    ds >= SECTIONAL_CUTOFF.desc &&
-    total >= CUTOFF;
+  const total = u.hindu + u.ca + u.desc + u.weeklyH + u.weeklyCA;
 
   name.textContent = u.name;
-  rollShow.textContent = roll;
-  vocab.textContent = `${vs}/${u.vocab.total}${vs >= 15 ? "" : " *"}`;
-  ca.textContent = `${cs}/${u.ca.total}${cs >= 15 ? "" : " *"}`;
-  desc.textContent = u.desc.scored === null ? "Not Attempted *" : `${ds}/30`;
-  totalEl.textContent = `${total} / 70`;
-  cutoff.textContent = CUTOFF;
+  rollShow.textContent = r;
+  totalEl.textContent = total;
 
-  status.textContent = final ? "Qualified" : "Not Qualified";
-  status.className = final ? "pass" : "fail";
+  totalEl = document.getElementById("total");
+
+  const qualified = total >= CUTOFFS.overall;
+  status.textContent = qualified ? "Qualified" : "Not Qualified";
+  status.className = qualified ? "pass" : "fail";
+
+  const ranks = Object.entries(USERS)
+    .map(([roll,u]) => ({ roll, total: u.hindu+u.ca+u.desc+u.weeklyH+u.weeklyCA }))
+    .sort((a,b)=>b.total-a.total);
+
+  rank.textContent = "#" + (ranks.findIndex(x=>x.roll===r)+1);
+
+  top3.innerHTML = ranks.slice(0,3)
+    .map((t,i)=>`<li>${["🥇","🥈","🥉"][i]} Roll ${t.roll} — ${t.total}</li>`)
+    .join("");
+
+  lastUpdated.textContent = new Date().toLocaleString();
+  qrCode.src = "https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=" + location.href;
 
   loginCard.style.display = "none";
   resultCard.style.display = "block";
 }
 
-function logout() {
+// ===== LOGOUT =====
+function logout(){
   loginCard.style.display = "block";
   resultCard.style.display = "none";
-  roll.value = password.value = dob.value = "";
-  error.textContent = "";
-}
+          }
